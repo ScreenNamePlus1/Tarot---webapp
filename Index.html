@@ -1,0 +1,1147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mystic Tarot - Complete Deck</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;800&family=Crimson+Text:ital,wght@0,400;0,600;1,400&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Crimson Text', serif;
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+        
+        .font-mystic {
+            font-family: 'Cinzel', serif;
+        }
+        
+        .card-container {
+            perspective: 1000px;
+            width: 300px;
+            height: 500px;
+            cursor: pointer;
+        }
+        
+        .card-inner {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            text-align: center;
+            transition: transform 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            transform-style: preserve-3d;
+        }
+        
+        .card-container.flipped .card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .card-face {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.5), 0 0 40px rgba(147, 51, 234, 0.3);
+        }
+        
+        .card-back {
+            background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+            border: 3px solid #d4af37;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .card-back::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: repeating-linear-gradient(
+                45deg,
+                transparent,
+                transparent 10px,
+                rgba(212, 175, 55, 0.1) 10px,
+                rgba(212, 175, 55, 0.1) 20px
+            );
+            animation: shimmer 20s linear infinite;
+        }
+        
+        .card-back-pattern {
+            width: 80%;
+            height: 80%;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            z-index: 1;
+        }
+        
+        .card-back-symbol {
+            font-size: 80px;
+            color: #d4af37;
+            text-shadow: 0 0 20px rgba(212, 175, 55, 0.5);
+            animation: pulse 3s ease-in-out infinite;
+        }
+        
+        .card-front {
+            background: linear-gradient(135deg, #f5f5f0 0%, #e8e6e1 100%);
+            transform: rotateY(180deg);
+            border: 8px solid #d4af37;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        
+        .card-front::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-image: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%239C92AC' fill-opacity='0.05'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+            opacity: 0.3;
+        }
+        
+        @keyframes shimmer {
+            0% { transform: translate(-50%, -50%) rotate(0deg); }
+            100% { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.1); opacity: 0.8; }
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        .floating {
+            animation: float 6s ease-in-out infinite;
+        }
+        
+        .glow-text {
+            text-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 0 0 20px rgba(212, 175, 55, 0.3);
+        }
+        
+        .card-header {
+            background: linear-gradient(to bottom, #d4af37, #b8941f);
+            padding: 10px;
+            text-align: center;
+            border-bottom: 2px solid #8b6914;
+        }
+        
+        .card-image-area {
+            flex: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            position: relative;
+        }
+        
+        .card-symbol {
+            font-size: 100px;
+            filter: drop-shadow(0 4px 8px rgba(0,0,0,0.2));
+        }
+        
+        .card-footer {
+            background: linear-gradient(to top, #d4af37, #b8941f);
+            padding: 15px;
+            text-align: center;
+            border-top: 2px solid #8b6914;
+        }
+        
+        .stars {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            overflow: hidden;
+            z-index: 0;
+        }
+        
+        .star {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: white;
+            border-radius: 50%;
+            animation: twinkle 3s infinite;
+        }
+        
+        @keyframes twinkle {
+            0%, 100% { opacity: 0; transform: scale(0.5); }
+            50% { opacity: 1; transform: scale(1); }
+        }
+        
+        .reset-btn {
+            background: linear-gradient(135deg, #d4af37 0%, #b8941f 100%);
+            transition: all 0.3s ease;
+        }
+        
+        .reset-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 30px rgba(212, 175, 55, 0.4);
+        }
+        
+        .meaning-box {
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(212, 175, 55, 0.3);
+        }
+
+        .suit-wands { color: #d97706; }
+        .suit-cups { color: #2563eb; }
+        .suit-swords { color: #dc2626; }
+        .suit-pentacles { color: #059669; }
+        .suit-major { color: #7c3aed; }
+    </style>
+</head>
+<body class="text-white relative">
+    <div class="stars" id="stars"></div>
+    
+    <div class="relative z-10 container mx-auto px-4 py-8 min-h-screen flex flex-col items-center justify-center">
+        <div class="text-center mb-8 floating">
+            <h1 class="font-mystic text-5xl md:text-6xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-yellow-200 via-yellow-400 to-yellow-200 glow-text mb-2">
+                Mystic Tarot
+            </h1>
+            <p class="text-purple-200 text-lg italic">Complete 78-Card Deck • Click to reveal your destiny</p>
+        </div>
+        
+        <div class="card-container mb-8" id="cardContainer" onclick="flipCard()">
+            <div class="card-inner" id="cardInner">
+                <div class="card-face card-back">
+                    <div class="card-back-pattern">
+                        <div class="card-back-symbol">☽✦☾</div>
+                    </div>
+                    <div class="absolute bottom-4 text-yellow-500 text-sm font-mystic tracking-widest">MYSTIC</div>
+                </div>
+                
+                <div class="card-face card-front" id="cardFront">
+                    <div class="card-header">
+                        <h2 class="font-mystic text-lg font-bold text-purple-900" id="cardName">The Fool</h2>
+                        <p class="text-xs text-purple-800 uppercase tracking-widest" id="cardNumber">0 - Major Arcana</p>
+                    </div>
+                    <div class="card-image-area">
+                        <div class="card-symbol" id="cardSymbol">🃏</div>
+                    </div>
+                    <div class="card-footer">
+                        <p class="text-xs font-bold text-purple-900 px-2" id="cardKeywords">Beginnings • Innocence • Spontaneity</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="meaningSection" class="hidden w-full max-w-2xl meaning-box rounded-lg p-6 mb-6 transform transition-all duration-500 opacity-0 translate-y-4">
+            <h3 class="font-mystic text-2xl text-yellow-400 mb-3 text-center">Interpretation</h3>
+            <p class="text-gray-200 text-center leading-relaxed mb-4" id="cardMeaning"></p>
+            <div class="flex justify-center gap-4 text-sm flex-wrap">
+                <span class="px-3 py-1 bg-purple-900/50 rounded-full border border-purple-500/30">Upright: <span id="uprightMeaning" class="text-green-300"></span></span>
+                <span class="px-3 py-1 bg-purple-900/50 rounded-full border border-purple-500/30">Reversed: <span id="reversedMeaning" class="text-red-300"></span></span>
+            </div>
+        </div>
+        
+        <button onclick="resetCard()" class="reset-btn px-8 py-3 rounded-full font-mystic font-bold text-purple-900 shadow-lg transform hover:scale-105 transition-all hidden" id="resetBtn">
+            Draw Another Card
+        </button>
+        
+        <div class="mt-8 text-center text-purple-300 text-sm opacity-60">
+            <p>78 Cards Total: 22 Major Arcana + 56 Minor Arcana</p>
+        </div>
+    </div>
+
+    <script>
+        const tarotCards = [
+            // MAJOR ARCANA (22 cards)
+            {
+                name: "The Fool",
+                number: "0",
+                suit: "major",
+                symbol: "🃏",
+                keywords: "Beginnings • Innocence • Spontaneity",
+                meaning: "The Fool represents new beginnings, having faith in the future, being inexperienced, not knowing what to expect, having beginner's luck, improvisation and believing in the universe.",
+                upright: "New beginnings, innocence, spontaneity",
+                reversed: "Recklessness, risk-taking, inconsideration"
+            },
+            {
+                name: "The Magician",
+                number: "I",
+                suit: "major",
+                symbol: "🎩",
+                keywords: "Manifestation • Resourcefulness • Power",
+                meaning: "The Magician signifies that you have all the skills and tools you need to be successful. The universe is aligning to bring positive changes, and you must use your intellect and willpower to make things happen.",
+                upright: "Manifestation, resourcefulness, power",
+                reversed: "Manipulation, poor planning, untapped talents"
+            },
+            {
+                name: "The High Priestess",
+                number: "II",
+                suit: "major",
+                symbol: "🌙",
+                keywords: "Intuition • Sacred Knowledge • Divine Feminine",
+                meaning: "The High Priestess sits at the threshold of the conscious and subconscious mind. She invites you to remain still and reflect, trusting your intuition and inner knowledge to guide you.",
+                upright: "Intuition, sacred knowledge, divine feminine",
+                reversed: "Secrets, disconnected from intuition, withdrawal"
+            },
+            {
+                name: "The Empress",
+                number: "III",
+                suit: "major",
+                symbol: "👑",
+                keywords: "Femininity • Beauty • Nature • Abundance",
+                meaning: "The Empress is a call to connect with your feminine side. This can translate to fertility, expression of creativity, nurturing, and connecting with nature and your senses.",
+                upright: "Femininity, beauty, nature, abundance",
+                reversed: "Creative block, dependence on others, emptiness"
+            },
+            {
+                name: "The Emperor",
+                number: "IV",
+                suit: "major",
+                symbol: "⚔️",
+                keywords: "Authority • Structure • Control • Fatherhood",
+                meaning: "The Emperor represents structure and authority. He asks you to be disciplined, efficient, and to use logic and reason. It's time to organize your life and establish solid foundations.",
+                upright: "Authority, structure, control, fatherhood",
+                reversed: "Tyranny, rigidity, coldness, lack of discipline"
+            },
+            {
+                name: "The Hierophant",
+                number: "V",
+                suit: "major",
+                symbol: "🔑",
+                keywords: "Spiritual Wisdom • Religious Beliefs • Conformity",
+                meaning: "The Hierophant represents traditional values and institutions. It can indicate a need to follow established social structures or a mentor who will provide wisdom and guidance.",
+                upright: "Spiritual wisdom, religious beliefs, conformity",
+                reversed: "Personal beliefs, freedom, challenging the status quo"
+            },
+            {
+                name: "The Lovers",
+                number: "VI",
+                suit: "major",
+                symbol: "💕",
+                keywords: "Love • Harmony • Relationships • Choices",
+                meaning: "The Lovers represent relationships and choices. Its appearance in a spread indicates some decision about an existing relationship, a temptation of the heart, or a choice of potential partners.",
+                upright: "Love, harmony, relationships, choices",
+                reversed: "Self-love, disharmony, imbalance, misalignment"
+            },
+            {
+                name: "The Chariot",
+                number: "VII",
+                suit: "major",
+                symbol: "🏛️",
+                keywords: "Control • Willpower • Success • Action",
+                meaning: "The Chariot represents overcoming conflicts and moving forward in a positive direction. One needs to keep going on and through sheer hard work and commitment, they will be victorious.",
+                upright: "Control, willpower, success, action",
+                reversed: "Self-discipline, opposition, lack of direction"
+            },
+            {
+                name: "Strength",
+                number: "VIII",
+                suit: "major",
+                symbol: "🦁",
+                keywords: "Strength • Courage • Patience • Control",
+                meaning: "Strength predicts the triumphant conclusion to a major life problem, situation or temptation through strength of character. It is a very happy card if you are fighting illness or recovering from injury.",
+                upright: "Strength, courage, patience, control",
+                reversed: "Self-doubt, weakness, insecurity, low energy"
+            },
+            {
+                name: "The Hermit",
+                number: "IX",
+                suit: "major",
+                symbol: "🏔️",
+                keywords: "Soul Searching • Introspection • Being Alone",
+                meaning: "The Hermit suggests that you are in a phase of introspection where you are drawing your attention inwards and looking for answers within. You need a period of inner reflection.",
+                upright: "Soul searching, introspection, being alone",
+                reversed: "Isolation, loneliness, withdrawal, rejection"
+            },
+            {
+                name: "Wheel of Fortune",
+                number: "X",
+                suit: "major",
+                symbol: "☸️",
+                keywords: "Good Luck • Karma • Life Cycles • Destiny",
+                meaning: "The Wheel of Fortune indicates that life is made up of cycles. Good times and bad times, when one finishes another begins. It reminds you that 'this too shall pass'.",
+                upright: "Good luck, karma, life cycles, destiny",
+                reversed: "Bad luck, resistance to change, breaking cycles"
+            },
+            {
+                name: "Justice",
+                number: "XI",
+                suit: "major",
+                symbol: "⚖️",
+                keywords: "Justice • Fairness • Truth • Cause and Effect",
+                meaning: "Justice represents the idea that the fairest decision will be made. You are being called to account for your actions and will be judged accordingly.",
+                upright: "Justice, fairness, truth, cause and effect",
+                reversed: "Unfairness, lack of accountability, dishonesty"
+            },
+            {
+                name: "The Hanged Man",
+                number: "XII",
+                suit: "major",
+                symbol: "🙃",
+                keywords: "Pause • Surrender • Letting Go • New Perspectives",
+                meaning: "The Hanged Man indicates that you are in a state of suspension and waiting. You need to suspend action, and as a result, a new possibility or insight will emerge.",
+                upright: "Pause, surrender, letting go, new perspectives",
+                reversed: "Delays, resistance, stalling, indecision"
+            },
+            {
+                name: "Death",
+                number: "XIII",
+                suit: "major",
+                symbol: "💀",
+                keywords: "Endings • Change • Transformation • Transition",
+                meaning: "Death indicates a time of significant transformation, change and transition. You need to close one door to open another. It represents the end of a major phase or aspect of your life.",
+                upright: "Endings, change, transformation, transition",
+                reversed: "Resistance to change, unable to move on, stagnation"
+            },
+            {
+                name: "Temperance",
+                number: "XIV",
+                suit: "major",
+                symbol: "🏺",
+                keywords: "Balance • Moderation • Patience • Purpose",
+                meaning: "Temperance is a card about balance, in many forms, and finding a middle ground. It suggests that you need to remain calm, even when your life feels stressful or frantic.",
+                upright: "Balance, moderation, patience, purpose",
+                reversed: "Imbalance, excess, self-healing, re-alignment"
+            },
+            {
+                name: "The Devil",
+                number: "XV",
+                suit: "major",
+                symbol: "😈",
+                keywords: "Shadow Self • Attachment • Addiction • Restriction",
+                meaning: "The Devil represents being seduced by the material world and physical pleasures. Also living in fear, domination and bondage, being caged by an overabundance of luxury, discretion should be used.",
+                upright: "Shadow self, attachment, addiction, restriction",
+                reversed: "Releasing limiting beliefs, detachment, freedom"
+            },
+            {
+                name: "The Tower",
+                number: "XVI",
+                suit: "major",
+                symbol: "🗼",
+                keywords: "Sudden Change • Upheaval • Chaos • Revelation",
+                meaning: "The Tower represents a sudden, dramatic change. You may feel that your foundations are being shaken, but this destruction is necessary for new growth and revelation.",
+                upright: "Sudden change, upheaval, chaos, revelation",
+                reversed: "Personal transformation, fear of change, averting disaster"
+            },
+            {
+                name: "The Star",
+                number: "XVII",
+                suit: "major",
+                symbol: "⭐",
+                keywords: "Hope • Faith • Purpose • Renewal • Spirituality",
+                meaning: "The Star brings hope, renewed power, and strength to carry on with life. It shows how abundantly blessed you are by the universe. It indicates a time of personal growth and understanding.",
+                upright: "Hope, faith, purpose, renewal, spirituality",
+                reversed: "Lack of faith, despair, self-trust, disconnection"
+            },
+            {
+                name: "The Moon",
+                number: "XVIII",
+                suit: "major",
+                symbol: "🌕",
+                keywords: "Illusion • Fear • Anxiety • Subconscious • Intuition",
+                meaning: "The Moon represents illusion, fear, and anxiety. Things may not be as they seem. You need to trust your intuition and pay attention to your dreams and subconscious mind.",
+                upright: "Illusion, fear, anxiety, subconscious, intuition",
+                reversed: "Release of fear, repressed emotion, inner confusion"
+            },
+            {
+                name: "The Sun",
+                number: "XIX",
+                suit: "major",
+                symbol: "☀️",
+                keywords: "Positivity • Fun • Warmth • Success • Vitality",
+                meaning: "The Sun represents success, radiance and abundance. It gives you strength and tells you that no matter where you go or what you do, your positive and radiant energy will follow you.",
+                upright: "Positivity, fun, warmth, success, vitality",
+                reversed: "Inner child, feeling down, overly optimistic"
+            },
+            {
+                name: "Judgement",
+                number: "XX",
+                suit: "major",
+                symbol: "📯",
+                keywords: "Judgement • Rebirth • Inner Calling • Absolution",
+                meaning: "Judgement indicates that you have come to a significant stage in your life where you need to review yourself and your actions. It is time to clear the slate and start fresh.",
+                upright: "Judgement, rebirth, inner calling, absolution",
+                reversed: "Self-doubt, refusal of self-examination, self-loathing"
+            },
+            {
+                name: "The World",
+                number: "XXI",
+                suit: "major",
+                symbol: "🌍",
+                keywords: "Completion • Integration • Accomplishment • Travel",
+                meaning: "The World signifies completion, achievement, and fulfillment. All of your efforts are finally paying off and you have reached the end of a journey or have completed a major life cycle.",
+                upright: "Completion, integration, accomplishment, travel",
+                reversed: "Seeking personal closure, short-cuts, delays"
+            },
+
+            // WANDS (14 cards) - Fire, Energy, Action
+            {
+                name: "Ace of Wands",
+                number: "Ace",
+                suit: "wands",
+                symbol: "🪄",
+                keywords: "Creation • Willpower • Inspiration • Desire",
+                meaning: "The Ace of Wands represents the spark of inspiration and creative energy. It signifies a new beginning filled with passion, enthusiasm, and the potential for growth.",
+                upright: "Creation, willpower, inspiration, desire",
+                reversed: "Lack of energy, lack of passion, boredom"
+            },
+            {
+                name: "Two of Wands",
+                number: "2",
+                suit: "wands",
+                symbol: "⚔️",
+                keywords: "Planning • Decisions • Discovery • Future",
+                meaning: "The Two of Wands indicates planning for the future and making decisions. You have the world in your hands and are contemplating your next move.",
+                upright: "Planning, decisions, discovery, future",
+                reversed: "Fear of unknown, lack of planning, disorganization"
+            },
+            {
+                name: "Three of Wands",
+                number: "3",
+                suit: "wands",
+                symbol: "🚢",
+                keywords: "Expansion • Foresight • Leadership • Exploration",
+                meaning: "The Three of Wands represents looking ahead to future possibilities. Your plans are beginning to manifest, and you're looking toward new horizons.",
+                upright: "Expansion, foresight, leadership, exploration",
+                reversed: "Obstacles, delays, frustration, limited outlook"
+            },
+            {
+                name: "Four of Wands",
+                number: "4",
+                suit: "wands",
+                symbol: "🎉",
+                keywords: "Celebration • Harmony • Marriage • Home",
+                meaning: "The Four of Wands is a card of celebration and joy. It represents happy reunions, weddings, and the completion of a phase with cause for celebration.",
+                upright: "Celebration, harmony, marriage, home",
+                reversed: "Instability, lack of support, unhappy home"
+            },
+            {
+                name: "Five of Wands",
+                number: "5",
+                suit: "wands",
+                symbol: "⚔️",
+                keywords: "Conflict • Competition • Tension • Diversity",
+                meaning: "The Five of Wands represents conflict and competition. You may be facing opposition or dealing with chaotic energy around you.",
+                upright: "Conflict, competition, tension, diversity",
+                reversed: "Avoiding conflict, resolving disputes, agreement"
+            },
+            {
+                name: "Six of Wands",
+                number: "6",
+                suit: "wands",
+                symbol: "🏆",
+                keywords: "Victory • Recognition • Pride • Success",
+                meaning: "The Six of Wands is a card of victory and public recognition. Your efforts have been noticed, and you are receiving the acclaim you deserve.",
+                upright: "Victory, recognition, pride, success",
+                reversed: "Excess pride, lack of recognition, punishment"
+            },
+            {
+                name: "Seven of Wands",
+                number: "7",
+                suit: "wands",
+                symbol: "🛡️",
+                keywords: "Perseverance • Defense • Maintaining Control",
+                meaning: "The Seven of Wands represents standing your ground against opposition. You must defend your position and maintain your boundaries.",
+                upright: "Perseverance, defense, maintaining control",
+                reversed: "Giving up, overwhelmed, defensiveness"
+            },
+            {
+                name: "Eight of Wands",
+                number: "8",
+                suit: "wands",
+                symbol: "🏹",
+                keywords: "Speed • Action • Air Travel • Movement",
+                meaning: "The Eight of Wands indicates rapid movement and swift action. Things are happening quickly, and momentum is building.",
+                upright: "Speed, action, air travel, movement",
+                reversed: "Delays, frustration, holding back, waiting"
+            },
+            {
+                name: "Nine of Wands",
+                number: "9",
+                suit: "wands",
+                symbol: "🤕",
+                keywords: "Resilience • Courage • Persistence • Test of Faith",
+                meaning: "The Nine of Wands represents resilience and persistence. You have been through battles but stand ready to face one more challenge.",
+                upright: "Resilience, courage, persistence, test of faith",
+                reversed: "Exhaustion, giving up, chronic fatigue"
+            },
+            {
+                name: "Ten of Wands",
+                number: "10",
+                suit: "wands",
+                symbol: "🏋️",
+                keywords: "Burden • Responsibility • Hard Work • Stress",
+                meaning: "The Ten of Wands represents carrying heavy burdens and responsibilities. You may be taking on too much and need to delegate.",
+                upright: "Burden, responsibility, hard work, stress",
+                reversed: "Release of burden, delegation, finding balance"
+            },
+            {
+                name: "Page of Wands",
+                number: "Page",
+                suit: "wands",
+                symbol: "📜",
+                keywords: "Exploration • Excitement • Freedom • Discovery",
+                meaning: "The Page of Wands brings news of opportunities and creative inspiration. It represents a free spirit eager to explore.",
+                upright: "Exploration, excitement, freedom, discovery",
+                reversed: "Lack of direction, procrastination, creating conflict"
+            },
+            {
+                name: "Knight of Wands",
+                number: "Knight",
+                suit: "wands",
+                symbol: "🐎",
+                keywords: "Action • Adventure • Fearlessness • Impulsiveness",
+                meaning: "The Knight of Wands charges forward with passion and energy. He represents adventurous spirit and taking action.",
+                upright: "Action, adventure, fearlessness, impulsiveness",
+                reversed: "Anger, impulsiveness, recklessness, delays"
+            },
+            {
+                name: "Queen of Wands",
+                number: "Queen",
+                suit: "wands",
+                symbol: "👸",
+                keywords: "Confidence • Social • Determination • Charismatic",
+                meaning: "The Queen of Wands is confident, charismatic, and socially adept. She represents determination and the ability to inspire others.",
+                upright: "Confidence, social, determination, charismatic",
+                reversed: "Selfishness, jealousy, insecurities, manipulation"
+            },
+            {
+                name: "King of Wands",
+                number: "King",
+                suit: "wands",
+                symbol: "🤴",
+                keywords: "Leadership • Vision • Entrepreneur • Honor",
+                meaning: "The King of Wands is a natural leader with clear vision. He represents entrepreneurship and the ability to inspire others to follow.",
+                upright: "Leadership, vision, entrepreneur, honor",
+                reversed: "Impulsiveness, haste, ruthless, tyrannical"
+            },
+
+            // CUPS (14 cards) - Water, Emotions, Relationships
+            {
+                name: "Ace of Cups",
+                number: "Ace",
+                suit: "cups",
+                symbol: "🏆",
+                keywords: "Love • New Feelings • Emotional Awakening • Creativity",
+                meaning: "The Ace of Cups represents the beginning of emotional fulfillment and love. It signifies new feelings, spiritual connection, and overflowing joy.",
+                upright: "Love, new feelings, emotional awakening, creativity",
+                reversed: "Blocked emotions, emptiness, unrequited love"
+            },
+            {
+                name: "Two of Cups",
+                number: "2",
+                suit: "cups",
+                symbol: "💑",
+                keywords: "Unity • Partnership • Mutual Attraction • Connection",
+                meaning: "The Two of Cups represents harmonious partnerships and mutual attraction. It signifies balanced relationships and emotional union.",
+                upright: "Unity, partnership, mutual attraction, connection",
+                reversed: "Imbalance, broken communication, tension"
+            },
+            {
+                name: "Three of Cups",
+                number: "3",
+                suit: "cups",
+                symbol: "🥂",
+                keywords: "Celebration • Friendship • Creativity • Community",
+                meaning: "The Three of Cups is a card of joy and celebration with friends. It represents community support and creative collaboration.",
+                upright: "Celebration, friendship, creativity, community",
+                reversed: "Gossip, isolation, partying, overindulgence"
+            },
+            {
+                name: "Four of Cups",
+                number: "4",
+                suit: "cups",
+                symbol: "😔",
+                keywords: "Apathy • Contemplation • Disconnection • Reevaluation",
+                meaning: "The Four of Cups represents apathy and contemplation. You may be feeling disconnected or dissatisfied despite having opportunities.",
+                upright: "Apathy, contemplation, disconnection, reevaluation",
+                reversed: "Awareness, acceptance, choosing happiness"
+            },
+            {
+                name: "Five of Cups",
+                number: "5",
+                suit: "cups",
+                symbol: "😢",
+                keywords: "Loss • Grief • Disappointment • Regret",
+                meaning: "The Five of Cups represents loss and grief. You are focused on what has been lost rather than what remains.",
+                upright: "Loss, grief, disappointment, regret",
+                reversed: "Acceptance, moving on, finding peace, forgiveness"
+            },
+            {
+                name: "Six of Cups",
+                number: "6",
+                suit: "cups",
+                symbol: "🌸",
+                keywords: "Nostalgia • Childhood • Innocence • Sharing",
+                meaning: "The Six of Cups represents nostalgia and childhood memories. It signifies innocence, generosity, and reconnecting with the past.",
+                upright: "Nostalgia, childhood, innocence, sharing",
+                reversed: "Living in past, naivety, unrealistic, stuck"
+            },
+            {
+                name: "Seven of Cups",
+                number: "7",
+                suit: "cups",
+                symbol: "🌈",
+                keywords: "Choices • Fantasy • Illusion • Imagination",
+                meaning: "The Seven of Cups represents having many options but needing to make choices. Be careful not to get lost in fantasy or illusions.",
+                upright: "Choices, fantasy, illusion, imagination",
+                reversed: "Clarity, making choices, reality, focus"
+            },
+            {
+                name: "Eight of Cups",
+                number: "8",
+                suit: "cups",
+                symbol: "🚶",
+                keywords: "Walking Away • Disillusionment • Leaving Behind",
+                meaning: "The Eight of Cups represents walking away from something that no longer serves you. It's time to seek deeper meaning elsewhere.",
+                upright: "Walking away, disillusionment, leaving behind",
+                reversed: "Avoidance, fear of change, settling, staying"
+            },
+            {
+                name: "Nine of Cups",
+                number: "9",
+                suit: "cups",
+                symbol: "😊",
+                keywords: "Wishes Fulfilled • Contentment • Satisfaction • Gratitude",
+                meaning: "The Nine of Cups is the 'wish card' representing emotional fulfillment and contentment. Your desires are being realized.",
+                upright: "Wishes fulfilled, contentment, satisfaction, gratitude",
+                reversed: "Dissatisfaction, greed, smugness, unfulfilled wishes"
+            },
+            {
+                name: "Ten of Cups",
+                number: "10",
+                suit: "cups",
+                symbol: "👨‍👩‍👧‍👦",
+                keywords: "Divine Love • Blessings • Harmony • Family",
+                meaning: "The Ten of Cups represents ultimate emotional fulfillment and family harmony. It signifies blessings and lasting happiness.",
+                upright: "Divine love, blessings, harmony, family",
+                reversed: "Broken home, domestic conflict, disconnection"
+            },
+            {
+                name: "Page of Cups",
+                number: "Page",
+                suit: "cups",
+                symbol: "🐟",
+                keywords: "Creative Opportunities • Intuition • Curiosity",
+                meaning: "The Page of Cups brings creative inspiration and emotional messages. It represents intuitive insights and new feelings.",
+                upright: "Creative opportunities, intuition, curiosity",
+                reversed: "Emotional immaturity, insecurity, disappointment"
+            },
+            {
+                name: "Knight of Cups",
+                number: "Knight",
+                suit: "cups",
+                symbol: "💌",
+                keywords: "Romance • Charm • Imagination • Beauty",
+                meaning: "The Knight of Cups is a romantic dreamer who follows his heart. He represents pursuing your passions with grace.",
+                upright: "Romance, charm, imagination, beauty",
+                reversed: "Unrealistic, jealousy, moodiness, disappointment"
+            },
+            {
+                name: "Queen of Cups",
+                number: "Queen",
+                suit: "cups",
+                symbol: "🌊",
+                keywords: "Compassion • Calm • Comfort • Emotional Security",
+                meaning: "The Queen of Cups is deeply intuitive and compassionate. She represents emotional maturity and nurturing energy.",
+                upright: "Compassion, calm, comfort, emotional security",
+                reversed: "Emotional manipulation, moodiness, smothering"
+            },
+            {
+                name: "King of Cups",
+                number: "King",
+                suit: "cups",
+                symbol: "🐋",
+                keywords: "Emotional Balance • Control • Generosity • Diplomacy",
+                meaning: "The King of Cups has mastered his emotions and uses them wisely. He represents emotional balance and diplomatic leadership.",
+                upright: "Emotional balance, control, generosity, diplomacy",
+                reversed: "Moodiness, emotional manipulation, volatility"
+            },
+
+            // SWORDS (14 cards) - Air, Intellect, Conflict
+            {
+                name: "Ace of Swords",
+                number: "Ace",
+                suit: "swords",
+                symbol: "⚔️",
+                keywords: "Clarity • Breakthrough • New Ideas • Mental Force",
+                meaning: "The Ace of Swords represents mental clarity and breakthrough insights. It signifies new ideas and the power of intellect.",
+                upright: "Clarity, breakthrough, new ideas, mental force",
+                reversed: "Confusion, chaos, lack of clarity, miscommunication"
+            },
+            {
+                name: "Two of Swords",
+                number: "2",
+                suit: "swords",
+                symbol: "🙈",
+                keywords: "Indecision • Difficult Choices • Stalemate • Avoidance",
+                meaning: "The Two of Swords represents a difficult decision where you feel torn between options. You may be avoiding facing the truth.",
+                upright: "Indecision, difficult choices, stalemate, avoidance",
+                reversed: "Indecision, confusion, information overload, stalemate"
+            },
+            {
+                name: "Three of Swords",
+                number: "3",
+                suit: "swords",
+                symbol: "💔",
+                keywords: "Heartbreak • Grief • Sorrow • Emotional Pain",
+                meaning: "The Three of Swords represents heartbreak and emotional pain. It signifies grief, loss, and the need to accept and heal.",
+                upright: "Heartbreak, grief, sorrow, emotional pain",
+                reversed: "Recovery, forgiveness, moving on, releasing pain"
+            },
+            {
+                name: "Four of Swords",
+                number: "4",
+                suit: "swords",
+                symbol: "🧘",
+                keywords: "Rest • Restoration • Contemplation • Recuperation",
+                meaning: "The Four of Swords represents the need for rest and recovery. It's time to step back and allow yourself to heal.",
+                upright: "Rest, restoration, contemplation, recuperation",
+                reversed: "Restlessness, burnout, lack of progress, stagnation"
+            },
+            {
+                name: "Five of Swords",
+                number: "5",
+                suit: "swords",
+                symbol: "🏴‍☠️",
+                keywords: "Conflict • Defeat • Winning at All Costs • Betrayal",
+                meaning: "The Five of Swords represents conflict and hollow victory. You may win the battle but lose the war or damage relationships.",
+                upright: "Conflict, defeat, winning at all costs, betrayal",
+                reversed: "Reconciliation, making amends, past resentment"
+            },
+            {
+                name: "Six of Swords",
+                number: "6",
+                suit: "swords",
+                symbol: "🚣",
+                keywords: "Transition • Change • Moving On • Leaving Behind",
+                meaning: "The Six of Swords represents moving away from difficulties toward calmer waters. It's a transition to a better place.",
+                upright: "Transition, change, moving on, leaving behind",
+                reversed: "Resistance to change, unfinished business, baggage"
+            },
+            {
+                name: "Seven of Swords",
+                number: "7",
+                suit: "swords",
+                symbol: "🦊",
+                keywords: "Deception • Strategy • Sneakiness • Getting Away With",
+                meaning: "The Seven of Swords represents strategy and possibly deception. You may need to be clever or watch for dishonesty.",
+                upright: "Deception, strategy, sneakiness, getting away with",
+                reversed: "Coming clean, rethinking approach, conscience"
+            },
+            {
+                name: "Eight of Swords",
+                number: "8",
+                suit: "swords",
+                symbol: "🤐",
+                keywords: "Restriction • Imprisonment • Self-Victimization • Negative",
+                meaning: "The Eight of Swords represents feeling trapped by your own thoughts. You have more options than you realize.",
+                upright: "Restriction, imprisonment, self-victimization, negative",
+                reversed: "Freedom, release, taking control, new perspective"
+            },
+            {
+                name: "Nine of Swords",
+                number: "9",
+                suit: "swords",
+                symbol: "😰",
+                keywords: "Anxiety • Worry • Fear • Nightmares",
+                meaning: "The Nine of Swords represents anxiety and worry keeping you awake at night. Your fears may be exaggerated by your mind.",
+                upright: "Anxiety, worry, fear, nightmares",
+                reversed: "Hope, reaching out, despair, inner turmoil"
+            },
+            {
+                name: "Ten of Swords",
+                number: "10",
+                suit: "swords",
+                symbol: "⚰️",
+                keywords: "Painful Endings • Deep Wounds • Betrayal • Loss",
+                meaning: "The Ten of Swords represents a painful ending or rock bottom. However, the worst is over and dawn follows darkness.",
+                upright: "Painful endings, deep wounds, betrayal, loss",
+                reversed: "Recovery, regeneration, resisting an inevitable end"
+            },
+            {
+                name: "Page of Swords",
+                number: "Page",
+                suit: "swords",
+                symbol: "🗡️",
+                keywords: "Curiosity • New Ideas • Thirst for Knowledge • Communication",
+                meaning: "The Page of Swords represents intellectual curiosity and new ideas. It signifies a thirst for knowledge and honest communication.",
+                upright: "Curiosity, new ideas, thirst for knowledge, communication",
+                reversed: "Deception, manipulation, all talk and no action"
+            },
+            {
+                name: "Knight of Swords",
+                number: "Knight",
+                suit: "swords",
+                symbol: "⚡",
+                keywords: "Action • Impulsiveness • Defending Beliefs • Speed",
+                meaning: "The Knight of Swords charges forward with intellectual vigor. He represents swift action and defending your ideas.",
+                upright: "Action, impulsiveness, defending beliefs, speed",
+                reversed: "No direction, disregard for consequences, unprepared"
+            },
+            {
+                name: "Queen of Swords",
+                number: "Queen",
+                suit: "swords",
+                symbol: "🦅",
+                keywords: "Independent • Unbiased Judgment • Clear Boundaries",
+                meaning: "The Queen of Swords is intellectually sharp and independent. She represents clear thinking and honest communication.",
+                upright: "Independent, unbiased judgment, clear boundaries",
+                reversed: "Cold-hearted, cruel, bitterness, overly emotional"
+            },
+            {
+                name: "King of Swords",
+                number: "King",
+                suit: "swords",
+                symbol: "👑",
+                keywords: "Mental Clarity • Intellectual Power • Authority • Truth",
+                meaning: "The King of Swords represents intellectual authority and truth. He uses logic and reason to make fair judgments.",
+                upright: "Mental clarity, intellectual power, authority, truth",
+                reversed: "Quiet power, inner truth, misuse of power, manipulation"
+            },
+
+            // PENTACLES (14 cards) - Earth, Material World, Money
+            {
+                name: "Ace of Pentacles",
+                number: "Ace",
+                suit: "pentacles",
+                symbol: "💰",
+                keywords: "New Financial Opportunity • Prosperity • Security • Abundance",
+                meaning: "The Ace of Pentacles represents a new financial or material opportunity. It signifies prosperity and the potential for abundance.",
+                upright: "New financial opportunity, prosperity, security, abundance",
+                reversed: "Lost opportunity, lack of planning, scarcity"
+            },
+            {
+                name: "Two of Pentacles",
+                number: "2",
+                suit: "pentacles",
+                symbol: "🤹",
+                keywords: "Balance • Adaptability • Time Management • Prioritization",
+                meaning: "The Two of Pentacles represents juggling multiple responsibilities. You need to balance your time and resources carefully.",
+                upright: "Balance, adaptability, time management, prioritization",
+                reversed: "Overwhelm, disorganization, reprioritization"
+            },
+            {
+                name: "Three of Pentacles",
+                number: "3",
+                suit: "pentacles",
+                symbol: "🏗️",
+                keywords: "Teamwork • Collaboration • Learning • Implementation",
+                meaning: "The Three of Pentacles represents teamwork and collaboration. Your skills are being recognized and appreciated by others.",
+                upright: "Teamwork, collaboration, learning, implementation",
+                reversed: "Lack of teamwork, disregard for skills, poor quality"
+            },
+            {
+                name: "Four of Pentacles",
+                number: "4",
+                suit: "pentacles",
+                symbol: "🏦",
+                keywords: "Security • Conservation • Frugality • Control",
+                meaning: "The Four of Pentacles represents holding on to what you have. You may be being too conservative or controlling with resources.",
+                upright: "Security, conservation, frugality, control",
+                reversed: "Greed, materialism, self-protection, possessiveness"
+            },
+            {
+                name: "Five of Pentacles",
+                number: "5",
+                suit: "pentacles",
+                symbol: "❄️",
+                keywords: "Financial Loss • Poverty • Lack • Isolation",
+                meaning: "The Five of Pentacles represents financial hardship or feeling left out in the cold. Help may be closer than you think.",
+                upright: "Financial loss, poverty, lack, isolation",
+                reversed: "Recovery from loss, spiritual poverty, finding help"
+            },
+            {
+                name: "Six of Pentacles",
+                number: "6",
+                suit: "pentacles",
+                symbol: "🎁",
+                keywords: "Generosity • Charity • Giving • Prosperity • Sharing",
+                meaning: "The Six of Pentacles represents generosity and sharing wealth. It signifies giving or receiving help and maintaining balance.",
+                upright: "Generosity, charity, giving, prosperity, sharing",
+                reversed: "Debt, selfishness, one-sided charity, strings attached"
+            },
+            {
+                name: "Seven of Pentacles",
+                number: "7",
+                suit: "pentacles",
+                symbol: "🌱",
+                keywords: "Long-term View • Sustainable Results • Perseverance • Investment",
+                meaning: "The Seven of Pentacles represents patience and long-term investment. Your hard work will pay off, but you must wait for results.",
+                upright: "Long-term view, sustainable results, perseverance, investment",
+                reversed: "Lack of long-term vision, limited success, impatience"
+            },
+            {
+                name: "Eight of Pentacles",
+                number: "8",
+                suit: "pentacles",
+                symbol: "🔨",
+                keywords: "Apprenticeship • Repetitive Tasks • Mastery • Skill Development",
+                meaning: "The Eight of Pentacles represents dedication to mastering your craft. Hard work and attention to detail will lead to success.",
+                upright: "Apprenticeship, repetitive tasks, mastery, skill development",
+                reversed: "Self-development, perfectionism, misdirected activity"
+            },
+            {
+                name: "Nine of Pentacles",
+                number: "9",
+                suit: "pentacles",
+                symbol: "🦚",
+                keywords: "Abundance • Luxury • Self-Sufficiency • Financial Independence",
+                meaning: "The Nine of Pentacles represents enjoying the fruits of your labor. You have achieved comfort and financial independence.",
+                upright: "Abundance, luxury, self-sufficiency, financial independence",
+                reversed: "Self-worth issues, working alone, chasing image"
+            },
+            {
+                name: "Ten of Pentacles",
+                number: "10",
+                suit: "pentacles",
+                symbol: "🏘️",
+                keywords: "Wealth • Financial Security • Family • Long-term Success",
+                meaning: "The Ten of Pentacles represents lasting wealth and family legacy. It signifies financial security and established success.",
+                upright: "Wealth, financial security, family, long-term success",
+                reversed: "Financial failure, loneliness, loss of family, instability"
+            },
+            {
+                name: "Page of Pentacles",
+                number: "Page",
+                suit: "pentacles",
+                symbol: "📚",
+                keywords: "Manifestation • Financial Opportunity • Skill Development",
+                meaning: "The Page of Pentacles brings news of financial opportunity or new skills. It represents ambition and practical dreams.",
+                upright: "Manifestation, financial opportunity, skill development",
+                reversed: "Lack of progress, procrastination, learn from failure"
+            },
+            {
+                name: "Knight of Pentacles",
+                number: "Knight",
+                suit: "pentacles",
+                symbol: "🐢",
+                keywords: "Hard Work • Productivity • Routine • Conservatism",
+                meaning: "The Knight of Pentacles is methodical and hardworking. He represents steady progress and dedication to the task at hand.",
+                upright: "Hard work, productivity, routine, conservatism",
+                reversed: "Self-discipline, boredom, feeling stuck, perfectionism"
+            },
+            {
+                name: "Queen of Pentacles",
+                number: "Queen",
+                suit: "pentacles",
+                symbol: "🌳",
+                keywords: "Nurturing • Practical • Providing • Financial Security",
+                meaning: "The Queen of Pentacles is nurturing and practical. She represents financial security achieved through caring for others and practical matters.",
+                upright: "Nurturing, practical, providing, financial security",
+                reversed: "Financial independence, self-care, co-dependency"
+            },
+            {
+                name: "King of Pentacles",
+                number: "King",
+                suit: "pentacles",
+                symbol: "🦁",
+                keywords: "Wealth • Business • Leadership • Security • Discipline",
+                meaning: "The King of Pentacles represents material success and business acumen. He has achieved wealth through discipline and leadership.",
+                upright: "Wealth, business, leadership, security, discipline",
+                reversed: "Financially inept, obsessed with wealth, stubborn"
+            }
+        ];
+
+        let isFlipped = false;
+        let currentCard = null;
+
+        function createStars() {
+            const starsContainer = document.getElementById('stars');
+            for (let i = 0; i < 100; i++) {
+                const star = document.createElement('div');
+                star.className = 'star';
+                star.style.left = Math.random() * 100 + '%';
+                star.style.top = Math.random() * 100 + '%';
+                star.style.animationDelay = Math.random() * 3 + 's';
+                star.style.opacity = Math.random();
+                starsContainer.appendChild(star);
+            }
+        }
+
+        function getRandomCard() {
+            return tarotCards[Math.floor(Math.random() * tarotCards.length)];
+        }
+
+        function flipCard() {
+            if (isFlipped) return;
+            
+            const container = document.getElementById('cardContainer');
+            const meaningSection = document.getElementById('meaningSection');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            currentCard = getRandomCard();
+            
+            document.getElementById('cardName').textContent = currentCard.name;
+            document.getElementById('cardNumber').textContent = `${currentCard.number} - ${currentCard.suit.charAt(0).toUpperCase() + currentCard.suit.slice(1)}`;
+            document.getElementById('cardSymbol').textContent = currentCard.symbol;
+            document.getElementById('cardKeywords').textContent = currentCard.keywords;
+            document.getElementById('cardMeaning').textContent = currentCard.meaning;
+            document.getElementById('uprightMeaning').textContent = currentCard.upright;
+            document.getElementById('reversedMeaning').textContent = currentCard.reversed;
+            
+            // Color coding by suit
+            const symbolElement = document.getElementById('cardSymbol');
+            symbolElement.className = `card-symbol suit-${currentCard.suit}`;
+            
+            container.classList.add('flipped');
+            isFlipped = true;
+            
+            setTimeout(() => {
+                meaningSection.classList.remove('hidden');
+                setTimeout(() => {
+                    meaningSection.classList.remove('opacity-0', 'translate-y-4');
+                }, 50);
+            }, 400);
+            
+            setTimeout(() => {
+                resetBtn.classList.remove('hidden');
+            }, 800);
+        }
+
+        function resetCard() {
+            const container = document.getElementById('cardContainer');
+            const meaningSection = document.getElementById('meaningSection');
+            const resetBtn = document.getElementById('resetBtn');
+            
+            meaningSection.classList.add('opacity-0', 'translate-y-4');
+            setTimeout(() => {
+                meaningSection.classList.add('hidden');
+            }, 500);
+            
+            resetBtn.classList.add('hidden');
+            
+            setTimeout(() => {
+                container.classList.remove('flipped');
+                isFlipped = false;
+            }, 300);
+        }
+
+        createStars();
+
+        document.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'Enter') {
+                if (!isFlipped) {
+                    flipCard();
+                } else {
+                    resetCard();
+                }
+            }
+        });
+    </script>
+</body>
+</html>
